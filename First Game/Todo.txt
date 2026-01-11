@@ -1,0 +1,9 @@
+Fix animation for coins score while multilple pickups
+Add Reset Game when presses R
+Better Death
+  - add Camera Shake on death
+  - pause
+  - resume death animation
+  - fade to black	
+  - reset 
+  - Fade in game	

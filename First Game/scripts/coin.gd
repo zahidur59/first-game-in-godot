@@ -1,8 +1,11 @@
 extends Area2D
 
-@onready var game_manager = %GameManager
 @onready var animation_player = $AnimationPlayer
+@export var value: int = 5
+
+func _ready() -> void:
+	$Label.text = "+"+str(value);
 
 func _on_body_entered(body):
-	game_manager.add_point()
+	event_manager.emit_signal("defaultChannel",["pickups","coin",5])
 	animation_player.play("pickup")

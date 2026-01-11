@@ -1,6 +1,5 @@
-[gd_scene load_steps=18 format=4 uid="uid://cuv4vme4rwno0"]
+[gd_scene load_steps=17 format=4 uid="uid://cuv4vme4rwno0"]
 
-[ext_resource type="Script" uid="uid://dhu4wkhlypflx" path="res://scenes/game_manager.gd" id="1_kvpfn"]
 [ext_resource type="PackedScene" uid="uid://dqnaqj8yb6hwd" path="res://scenes/player.tscn" id="1_rbmkf"]
 [ext_resource type="PackedScene" uid="uid://bkn80rnknirpp" path="res://hud.tscn" id="1_vtaks"]
 [ext_resource type="FontFile" uid="uid://c53kogtyjwsss" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="2_nlliu"]
@@ -222,7 +221,6 @@ _data = {
 
 [node name="GameManager" type="Node" parent="."]
 unique_name_in_owner = true
-script = ExtResource("1_kvpfn")
 
 [node name="ScoreLabel" type="Label" parent="GameManager"]
 offset_left = 520.0
@@ -235,10 +233,6 @@ theme_override_font_sizes/font_size = 8
 text = "You collected X coins."
 horizontal_alignment = 1
 autowrap_mode = 2
-
-[node name="Timer" type="Timer" parent="GameManager"]
-
-[node name="World" type="Node2D" parent="GameManager"]
 
 [node name="HUD" parent="." instance=ExtResource("1_vtaks")]
 
@@ -375,5 +369,3 @@ position = Vector2(19, 2)
 
 [node name="Coin" parent="Coin/Coin/Coin" instance=ExtResource("4_28cek")]
 position = Vector2(17, -4)
-
-[connection signal="timeout" from="GameManager/Timer" to="GameManager" method="_on_timer_timeout"]
