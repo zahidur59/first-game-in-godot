@@ -15,12 +15,13 @@ script = ExtResource("1_kvpfn")
 process_mode = 1
 script = ExtResource("3_dinhu")
 
-[node name="CanvasModulate" type="CanvasModulate" parent="GameManager/World"]
-color = Color(0, 0, 0, 1)
+[node name="Timer" type="Timer" parent="GameManager/World"]
 
 [node name="player_dead" type="Timer" parent="GameManager"]
-wait_time = 0.5
+wait_time = 0.3
 
-[node name="HUD" parent="GameManager" instance=ExtResource("1_vtaks")]
+[node name="HUD" parent="." instance=ExtResource("1_vtaks")]
 
+[connection signal="timeout" from="GameManager/World/Timer" to="GameManager" method="_on_timer_timeout"]
+[connection signal="timeout" from="GameManager/World/Timer" to="GameManager/World" method="_on_timer_timeout"]
 [connection signal="timeout" from="GameManager/player_dead" to="GameManager" method="_on_player_dead_timeout"]

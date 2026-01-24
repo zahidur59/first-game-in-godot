@@ -1,7 +1,7 @@
 extends Camera2D
 
-var shake_strength := 0.0
-var shake_fade := 10.0
+var shake_strength := 5.0
+var shake_fade := 30.0
 
 func _ready() -> void:
 	print("Camera Initiated")

@@ -2,7 +2,8 @@ Fix animation for coins score while multilple pickups
 Add Reset Game when presses R
 Better Death
   - add Camera Shake on death
-  - pause
+  - play death music
+  - pause for half a sec
   - resume death animation
   - fade to black	
   - reset 

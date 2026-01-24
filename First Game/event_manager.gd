@@ -15,5 +15,5 @@ func _process(delta: float) -> void:
 	
 func _process_WorldChennel(args):
 	if(args[0] == "player" && args[1] == "dead"):
-		emit_signal("worldChannel",["world","shake",10])
+		emit_signal("worldChannel",["world","shake",5])
 		

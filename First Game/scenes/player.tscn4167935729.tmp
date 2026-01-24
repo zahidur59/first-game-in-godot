@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://dqnaqj8yb6hwd"]
+[gd_scene load_steps=31 format=3 uid="uid://dqnaqj8yb6hwd"]
 
 [ext_resource type="Script" uid="uid://dhojb01i6t155" path="res://scripts/player.gd" id="1_ofpvf"]
 [ext_resource type="Texture2D" uid="uid://b8cmjj8vq3r8d" path="res://assets/sprites/knight.png" id="1_p3dy5"]
@@ -18,10 +18,6 @@ region = Rect2(64, 224, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_qlg0r"]
 atlas = ExtResource("1_p3dy5")
 region = Rect2(96, 224, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_fjrip"]
-atlas = ExtResource("1_p3dy5")
-region = Rect2(160, 160, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tuyoq"]
 atlas = ExtResource("1_p3dy5")
@@ -127,15 +123,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_qlg0r")
 }],
 "loop": false,
-"name": &"dead_1",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_fjrip")
-}],
-"loop": false,
-"name": &"dead_2",
+"name": &"dead",
 "speed": 5.0
 }, {
 "frames": [{
@@ -241,3 +229,5 @@ animation = &"got_hit"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -5)
 shape = SubResource("CircleShape2D_bvcm0")
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
