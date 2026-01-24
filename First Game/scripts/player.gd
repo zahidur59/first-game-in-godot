@@ -11,6 +11,23 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 @onready var animated_sprite = $AnimatedSprite2D
 
+#knockbacks
+@export var knockback_strength := 120.0
+@export var knockback_up := 60.0
+@export var knockback_time := 0.15
+var knockback_dir := 0
+var knockback_timer := 0.0
+var in_knockback := false
+@export var invisibility_frame_time := 1
+var invincible := false
+
+func apply_knockback(from_position: Vector2):
+	in_knockback = true
+	knockback_timer = knockback_time
+	knockback_dir = sign(global_position.x - from_position.x)
+	velocity.x = knockback_dir * knockback_strength
+	velocity.y = -knockback_up
+
 func _ready() -> void:
 	event_manager.connect("worldChannel",_process_WorldChannel)
 	$AnimatedSprite2D.animation_finished.connect(_on_animation_finished)
@@ -22,60 +39,100 @@ func _on_animation_finished():
 		event_manager.emit_signal("worldChannel",["player","dead_animation_finished"])	
 	
 func _process_WorldChannel(args):
-	if(args[0] == "player" and args[1] == "dead"):
-		control_on = false;
-		velocity.y = 0;
-		velocity.x = 0;
-		
-		if is_on_floor():
-			animated_sprite.play("dead_1")
-		else:
-			animated_sprite.play("dead_2")
-			#get_node("CollisionShape2D").queue_free()
-		
-	if(args[0] == "player" and args[1] == "got_hit"):
-		var tween = create_tween()
-		var canvas = animated_sprite
-		canvas.modulate = Color.RED
-		#tween.tween_property(canvas, "modulate", Color.RED, 0.1)
-		tween.tween_property(canvas, "modulate", Color.WHITE, 0.1)
-		#animated_sprite.modulate = Color(1, 0, 0) # RGBA
-		print("Its hurts!!!!!!!!!!!!!!!!! ")
+	if(args[0] == "player"):
 
+		if(args[1] == "dead"):
+			control_on = false;
+			velocity.y = 0;
+			velocity.x = 0;
+			
+			if is_on_floor():
+				animated_sprite.play("dead_1")
+			else:
+				animated_sprite.play("dead_2")
+		
+		if(args[1] == "got_hit"):
+			if invincible:
+				return
+			print("Its hurts!!!!!!!!!!!!!!!!! ")
 
+			if(!stats_manager.lives):
+				event_manager.emit_signal("worldChannel",["player","dead"])
+				return
+			else:
+				stats_manager.remove_life(args[2])		
+				
+			var tween = create_tween()
+			var canvas = animated_sprite
+			canvas.modulate = Color.RED
+			#tween.tween_property(canvas, "modulate", Color.RED, 0.1)
+			tween.tween_property(canvas, "modulate", Color.WHITE, 0.1)
+			#animated_sprite.modulate = Color(1, 0, 0) # RGBA
+			apply_knockback(args[3])
+			start_invincibility()
+			
+		if(args[1] == "player_hit_kill_zone"):
+				print("player hit kill zone")
+				stats_manager.remove_life(1)
+				event_manager.emit_signal("worldChannel",["player","dead"])
+				
+		if(args[1] == "reset_game_pressed"):
+			stats_manager.remove_life(1)
+			event_manager.emit_signal("worldChannel",["player","dead"])		
+	
+func start_invincibility():
+	invincible = true
+	$HurtBox.monitoring = false
+
+	await get_tree().create_timer(invisibility_frame_time).timeout
+
+	$HurtBox.monitoring = true
+	invincible = false
+
+func _process(delta):
+	if invincible:
+		$AnimatedSprite2D.visible = int(Time.get_ticks_msec() / 80) % 2 == 0
+	else:
+		$AnimatedSprite2D.visible = 1
+	
 func _physics_process(delta):
 	
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
-	if(control_on):
-	# Handle jump.
-		if Input.is_action_just_pressed("jump") and is_on_floor():
-			velocity.y = JUMP_VELOCITY
+	if in_knockback:
+		knockback_timer -= delta
+		if knockback_timer <= 0:
+			in_knockback = false
+	else:
+		if(control_on):
+		# Handle jump.
+			if Input.is_action_just_pressed("jump") and is_on_floor():
+				velocity.y = JUMP_VELOCITY
 
-		# Get the input direction: -1, 0, 1
-		var direction = Input.get_axis("move_left", "move_right")
-		
-		# Flip the Sprite
-		if direction > 0:
-			animated_sprite.flip_h = false
-		elif direction < 0:
-			animated_sprite.flip_h = true
-		
-		# Play animations
-		if is_on_floor():
-			if direction == 0:
-				animated_sprite.play("idle")
+			# Get the input direction: -1, 0, 1
+			var direction = Input.get_axis("move_left", "move_right")
+			
+			# Flip the Sprite
+			if direction > 0:
+				animated_sprite.flip_h = false
+			elif direction < 0:
+				animated_sprite.flip_h = true
+			
+			# Play animations
+			if is_on_floor():
+				if direction == 0:
+					animated_sprite.play("idle")
+				else:
+					animated_sprite.play("run")
 			else:
-				animated_sprite.play("run")
-		else:
-			animated_sprite.play("jump")
-		
-		# Apply movement
-		if direction:
-			velocity.x = direction * SPEED
-		else:
-			velocity.x = move_toward(velocity.x, 0, SPEED)
-	
+				animated_sprite.play("jump")
+			
+			# Apply movement
+			if direction:
+				velocity.x = direction * SPEED
+			else:
+				velocity.x = move_toward(velocity.x, 0, SPEED)
+
 	move_and_slide()

@@ -241,5 +241,3 @@ animation = &"got_hit"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -5)
 shape = SubResource("CircleShape2D_bvcm0")
-
-[node name="HurtBox" type="Area2D" parent="."]
