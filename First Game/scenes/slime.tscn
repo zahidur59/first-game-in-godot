@@ -55,7 +55,7 @@ frame = 2
 frame_progress = 0.722655
 
 [node name="Killzone" parent="." instance=ExtResource("2_aiwyj")]
-collision_layer = 2
+collision_layer = 4
 script = ExtResource("4_pjw23")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Killzone"]

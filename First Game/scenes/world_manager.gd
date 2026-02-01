@@ -3,7 +3,7 @@ extends Node2D
 @onready var canvas = $CanvasModulate
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-
+	event_manager.connect("worldChannel",_process_WorldChennel)
 	var Mob = preload("res://scenes/levels/level_001.tscn")
 	var mob_instance = Mob.instantiate()
 	add_child(mob_instance)
@@ -22,3 +22,6 @@ func _on_fadeout_tween_finished():
 	event_manager.emit_signal("worldChannel",["world","transition_end"])
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 	
+func _process_WorldChennel(args):
+	if(args[0] == "player" && args[1] == "dead"):
+		emit_signal("worldChannel",["world","shake",5])

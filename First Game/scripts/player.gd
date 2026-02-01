@@ -1,10 +1,11 @@
 extends CharacterBody2D
 
+var original_layer : int
 
 const SPEED = 130.0
 const JUMP_VELOCITY = -300.0
 var control_on = true
-
+var alive= true
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -29,6 +30,7 @@ func apply_knockback(from_position: Vector2):
 	velocity.y = -knockback_up
 
 func _ready() -> void:
+	original_layer = collision_layer
 	event_manager.connect("worldChannel",_process_WorldChannel)
 	$AnimatedSprite2D.animation_finished.connect(_on_animation_finished)
 	
@@ -40,9 +42,9 @@ func _on_animation_finished():
 	
 func _process_WorldChannel(args):
 	if(args[0] == "player"):
-
 		if(args[1] == "dead"):
 			control_on = false;
+			alive = false;
 			velocity.y = 0;
 			velocity.x = 0;
 			
@@ -50,17 +52,11 @@ func _process_WorldChannel(args):
 				animated_sprite.play("dead_1")
 			else:
 				animated_sprite.play("dead_2")
-		
-		if(args[1] == "got_hit"):
-			if invincible:
-				return
+			return
+		if(args[1] == "got_hit" && alive):
+			if invincible: return
 			print("Its hurts!!!!!!!!!!!!!!!!! ")
-
-			if(!stats_manager.lives):
-				event_manager.emit_signal("worldChannel",["player","dead"])
-				return
-			else:
-				stats_manager.remove_life(args[2])		
+			stats_manager.remove_life(args[2])		
 				
 			var tween = create_tween()
 			var canvas = animated_sprite
@@ -73,7 +69,7 @@ func _process_WorldChannel(args):
 			
 		if(args[1] == "player_hit_kill_zone"):
 				print("player hit kill zone")
-				stats_manager.remove_life(1)
+				stats_manager.remove_life()
 				event_manager.emit_signal("worldChannel",["player","dead"])
 				
 		if(args[1] == "reset_game_pressed"):
@@ -82,12 +78,11 @@ func _process_WorldChannel(args):
 	
 func start_invincibility():
 	invincible = true
-	$HurtBox.monitoring = false
-
+	collision_layer = 20
 	await get_tree().create_timer(invisibility_frame_time).timeout
-
-	$HurtBox.monitoring = true
+	collision_layer = original_layer
 	invincible = false
+
 
 func _process(delta):
 	if invincible:

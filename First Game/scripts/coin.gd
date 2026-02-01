@@ -7,5 +7,6 @@ func _ready() -> void:
 	$Label.text = "+"+str(value);
 
 func _on_body_entered(body):
-	event_manager.emit_signal("defaultChannel",["pickups","coin",5])
-	animation_player.play("pickup")
+	if body.name == "Player":
+		event_manager.emit_signal("defaultChannel",["pickups","coin",5])
+		animation_player.play("pickup")

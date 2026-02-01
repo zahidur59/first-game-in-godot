@@ -12,7 +12,6 @@ func _ready() -> void:
 
 func _process_WorldChannel(args):
 	if(args[0] == "player"):
-		
 		if(args[1] == "got_hit"):
 			event_manager.emit_signal("worldChannel",["world","shake",5])
 		if(args[1] == "dead"):
@@ -26,7 +25,6 @@ func _process_WorldChannel(args):
 
 func player_is_dead():
 	the_world.get_tree().paused = true
-	stats_manager.remove_life()
 	player_dead_timer.start()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

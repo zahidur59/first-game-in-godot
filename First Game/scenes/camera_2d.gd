@@ -19,5 +19,4 @@ func _process(delta):
 
 func shake(args):
 	if(args[0]=="world" && args[1]=="shake"):
-		print("The world is shaking")
 		shake_strength = args[2]
