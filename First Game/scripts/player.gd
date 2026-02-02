@@ -22,6 +22,31 @@ var in_knockback := false
 @export var invisibility_frame_time := 1
 var invincible := false
 
+var lives = 10
+
+func _ready() -> void:
+	original_layer = collision_layer
+	event_manager.connect("worldChannel",_process_WorldChannel)
+	event_manager.emit_signal("defaultChannel",["update_hud","player_lives",lives])
+	$AnimatedSprite2D.animation_finished.connect(_on_animation_finished)
+
+func add_life(life:=1):
+	lives += life;
+	event_manager.emit_signal("defaultChannel",["update_hud","player_lives",lives])
+
+func remove_life(life:=1):
+	if(lives <= life):
+		event_manager.emit_signal("worldChannel",["player","dead"])
+		remove_all_life()
+		return
+	lives -= life;
+	event_manager.emit_signal("defaultChannel",["update_hud","player_lives",lives])
+		
+func remove_all_life():
+	lives = 0
+	event_manager.emit_signal("defaultChannel",["update_hud","player_lives",lives])
+
+
 func apply_knockback(from_position: Vector2):
 	in_knockback = true
 	knockback_timer = knockback_time
@@ -29,10 +54,6 @@ func apply_knockback(from_position: Vector2):
 	velocity.x = knockback_dir * knockback_strength
 	velocity.y = -knockback_up
 
-func _ready() -> void:
-	original_layer = collision_layer
-	event_manager.connect("worldChannel",_process_WorldChannel)
-	$AnimatedSprite2D.animation_finished.connect(_on_animation_finished)
 	
 func _on_animation_finished():
 	var anim_name = $AnimatedSprite2D.animation 
@@ -56,7 +77,7 @@ func _process_WorldChannel(args):
 		if(args[1] == "got_hit" && alive):
 			if invincible: return
 			print("Its hurts!!!!!!!!!!!!!!!!! ")
-			stats_manager.remove_life(args[2])		
+			remove_life(args[2])		
 				
 			var tween = create_tween()
 			var canvas = animated_sprite
@@ -69,11 +90,11 @@ func _process_WorldChannel(args):
 			
 		if(args[1] == "player_hit_kill_zone"):
 				print("player hit kill zone")
-				stats_manager.remove_life()
+				remove_all_life()
 				event_manager.emit_signal("worldChannel",["player","dead"])
 				
 		if(args[1] == "reset_game_pressed"):
-			stats_manager.remove_life(1)
+			remove_all_life()
 			event_manager.emit_signal("worldChannel",["player","dead"])		
 	
 func start_invincibility():

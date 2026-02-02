@@ -18,7 +18,7 @@ func _process_WorldChannel(args):
 			player_is_dead()	
 		if(args[1] == "dead_animation_finished" ):
 			the_world.fade_out()
-		event_manager.emit_signal("defaultChannel",["update_hud","player_lives"])	
+		#event_manager.emit_signal("defaultChannel",["update_hud","player_lives"])	
 		
 	if(args[0] == "world" && args[1] == "transition_end" ):
 		get_tree().reload_current_scene()
