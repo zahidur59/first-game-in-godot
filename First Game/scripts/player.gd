@@ -44,6 +44,7 @@ func remove_life(life:=1):
 		
 func remove_all_life():
 	lives = 0
+	event_manager.emit_signal("worldChannel",["player","dead"])
 	event_manager.emit_signal("defaultChannel",["update_hud","player_lives",lives])
 
 
@@ -58,7 +59,6 @@ func apply_knockback(from_position: Vector2):
 func _on_animation_finished():
 	var anim_name = $AnimatedSprite2D.animation 
 	if(anim_name == "dead_1" || anim_name == "dead_2"):
-		print("You are dead")
 		event_manager.emit_signal("worldChannel",["player","dead_animation_finished"])	
 	
 func _process_WorldChannel(args):
@@ -76,17 +76,19 @@ func _process_WorldChannel(args):
 			return
 		if(args[1] == "got_hit" && alive):
 			if invincible: return
-			print("Its hurts!!!!!!!!!!!!!!!!! ")
+			if(lives > args[2]):
+				var tween = create_tween()
+				var canvas = animated_sprite
+				canvas.modulate = Color.RED
+				#tween.tween_property(canvas, "modulate", Color.RED, 0.1)
+				tween.tween_property(canvas, "modulate", Color.WHITE, 0.1)
+				#animated_sprite.modulate = Color(1, 0, 0) # RGBA
+				apply_knockback(args[3])
+				start_invincibility()
+			else:	
+				remove_all_life()
 			remove_life(args[2])		
-				
-			var tween = create_tween()
-			var canvas = animated_sprite
-			canvas.modulate = Color.RED
-			#tween.tween_property(canvas, "modulate", Color.RED, 0.1)
-			tween.tween_property(canvas, "modulate", Color.WHITE, 0.1)
-			#animated_sprite.modulate = Color(1, 0, 0) # RGBA
-			apply_knockback(args[3])
-			start_invincibility()
+								
 			
 		if(args[1] == "player_hit_kill_zone"):
 				print("player hit kill zone")

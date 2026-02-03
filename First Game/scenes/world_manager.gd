@@ -24,4 +24,4 @@ func _on_fadeout_tween_finished():
 	
 func _process_WorldChennel(args):
 	if(args[0] == "player" && args[1] == "dead"):
-		emit_signal("worldChannel",["world","shake",5])
+		emit_signal("worldChannel",["world","shake",30])
