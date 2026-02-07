@@ -20,7 +20,8 @@ script = ExtResource("3_dinhu")
 [node name="CanvasModulate" type="CanvasModulate" parent="GameManager/World"]
 color = Color(0, 0, 0, 1)
 
-[node name="player_dead" type="Timer" parent="GameManager"]
+[node name="player_dead" type="Timer" parent="GameManager/World"]
+process_mode = 3
 wait_time = 0.5
 
-[connection signal="timeout" from="GameManager/player_dead" to="GameManager" method="_on_player_dead_timeout"]
+[connection signal="timeout" from="GameManager/World/player_dead" to="GameManager/World" method="_on_player_dead_timeout"]

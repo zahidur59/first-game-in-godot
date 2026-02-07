@@ -36,7 +36,6 @@ func add_life(life:=1):
 
 func remove_life(life:=1):
 	if(lives <= life):
-		event_manager.emit_signal("worldChannel",["player","dead"])
 		remove_all_life()
 		return
 	lives -= life;
@@ -44,6 +43,7 @@ func remove_life(life:=1):
 		
 func remove_all_life():
 	lives = 0
+	alive = false;
 	event_manager.emit_signal("worldChannel",["player","dead"])
 	event_manager.emit_signal("defaultChannel",["update_hud","player_lives",lives])
 
@@ -83,21 +83,18 @@ func _process_WorldChannel(args):
 				#tween.tween_property(canvas, "modulate", Color.RED, 0.1)
 				tween.tween_property(canvas, "modulate", Color.WHITE, 0.1)
 				#animated_sprite.modulate = Color(1, 0, 0) # RGBA
+				remove_life(args[2])		
 				apply_knockback(args[3])
 				start_invincibility()
 			else:	
 				remove_all_life()
-			remove_life(args[2])		
-								
 			
 		if(args[1] == "player_hit_kill_zone"):
 				print("player hit kill zone")
 				remove_all_life()
-				event_manager.emit_signal("worldChannel",["player","dead"])
-				
+								
 		if(args[1] == "reset_game_pressed"):
 			remove_all_life()
-			event_manager.emit_signal("worldChannel",["player","dead"])		
 	
 func start_invincibility():
 	invincible = true
