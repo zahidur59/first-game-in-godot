@@ -22,32 +22,19 @@ func fade_in(time := 1.0 ):
 	tween.tween_property(canvas, "color", Color.WHITE, time)
 	
 func _on_fadeout_tween_finished():
-	event_manager.emit_signal("worldChannel",["world","transition_end"])
-# Called every frame. 'delta' is the elapsed time since the previous frame.
+	get_tree().reload_current_scene()
 	
 func _process_WorldChennel(args):
 	if(args[0] == "player"):
 		if(args[1] == "got_hit"):
 			event_manager.emit_signal("worldChannel",["world","shake",5])
 		if(args[1] == "dead"):
-			player_is_dead()	
+			event_manager.emit_signal("worldChannel",["world","shake",20])
+			the_level.get_tree().paused = true
+			player_dead_timer.start()
 		if(args[1] == "dead_animation_finished" ):
 			fade_out()
-		#event_manager.emit_signal("defaultChannel",["update_hud","player_lives"])	
-		
-	if(args[0] == "world" && args[1] == "transition_end" ):
-		get_tree().reload_current_scene()
-		
-	if(args[0] == "player" && args[1] == "dead"):
-		player_is_dead()
-		emit_signal("worldChannel",["world","shake",30])
-
-func player_is_dead():
-	the_level.get_tree().paused = true
-	player_dead_timer.start()
-
 
 func _on_player_dead_timeout() -> void:
 	player_dead_timer.stop()
 	the_level.get_tree().paused = false
-	#the_world.fade_out();

@@ -8,5 +8,6 @@ func _ready() -> void:
 
 func _on_body_entered(body):
 	if body.name == "Player":
+		$CollisionShape2D.queue_free()
 		event_manager.emit_signal("defaultChannel",["pickups","coin",5])
 		animation_player.play("pickup")

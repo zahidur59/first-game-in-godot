@@ -1,3 +1,6 @@
+
+
+DONE ..........................
 Fix animation for coins score while multilple pickups
 Add Reset Game when presses R
 Better Death

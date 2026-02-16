@@ -11,6 +11,9 @@ var alive= true
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 @onready var animated_sprite = $AnimatedSprite2D
+@onready var sfx_jump = $sfx_jump
+@onready var sfx_hurt = $sfx_hurt
+@onready var sfx_die = $sfx_die
 
 #knockbacks
 @export var knockback_strength := 120.0
@@ -43,7 +46,8 @@ func remove_life(life:=1):
 		
 func remove_all_life():
 	lives = 0
-	alive = false;
+	alive = false
+	sfx_die.play()
 	event_manager.emit_signal("worldChannel",["player","dead"])
 	event_manager.emit_signal("defaultChannel",["update_hud","player_lives",lives])
 
@@ -76,6 +80,7 @@ func _process_WorldChannel(args):
 			return
 		if(args[1] == "got_hit" && alive):
 			if invincible: return
+			sfx_hurt.play()
 			if(lives > args[2]):
 				var tween = create_tween()
 				var canvas = animated_sprite
@@ -125,7 +130,7 @@ func _physics_process(delta):
 		# Handle jump.
 			if Input.is_action_just_pressed("jump") and is_on_floor():
 				velocity.y = JUMP_VELOCITY
-
+				sfx_jump.play()
 			# Get the input direction: -1, 0, 1
 			var direction = Input.get_axis("move_left", "move_right")
 			
@@ -143,7 +148,7 @@ func _physics_process(delta):
 					animated_sprite.play("run")
 			else:
 				animated_sprite.play("jump")
-			
+				
 			# Apply movement
 			if direction:
 				velocity.x = direction * SPEED
